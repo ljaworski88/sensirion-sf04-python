@@ -58,11 +58,11 @@ if __name__ == '__main__':
     with smbus2.SMBus(1) as bus:
     # bus = smbus2.SMBus(1)
 
-        flow_sensor.reset_sensor(bus)
+        reset_sensor(bus)
 
         sleep(0.05)
 
         while(True):
-            reading, _ = flow_sensor.read_sensor(bus)
+            reading, _ = read_sensor(bus)
             print('flow reading: {}'.format(reading))
             print('crc byte: {}'.format(_))
