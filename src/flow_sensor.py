@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import smbus
+import smbus2
 from time import sleep
 
 __author__ = 'Lukas Jaworski'
@@ -27,7 +27,7 @@ def read_sensor(i2c_bus):
     input: None
     output: (Reading, CRC) - type (int, int)
     '''
-    flow_data = i2c_bus.read_word_data(_sensor_address, _trig_flow_read)
+    flow_data = i2c_bus.read_i2c_block_data(_sensor_address, _trig_flow_read, 3)
     flow_reading = (flow_data[0] << 8 | flow_data[1])
     crc_bit = flow_data[2]
     return (flow_reading, crc_bit)
@@ -50,5 +50,5 @@ def reset_sensor(i2c_bus, soft=True):
     output: None
     '''
     if soft:
-        result = i2c_bus.write_byte(_sensor_address, _soft_rest)
-        print('soft reset result: {}'.format(result))
+        i2c_bus.write_byte(_sensor_address, _soft_rest)
+        # print('soft reset result: {}'.format(result))
