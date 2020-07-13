@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import smbus2
+from smbus2 import SMBus, i2c_msg
 from time import sleep
 
 __author__ = 'Lukas Jaworski'
@@ -55,16 +55,17 @@ def reset_sensor(i2c_bus, soft=True):
 
 
 if __name__ == '__main__':
-    with smbus2.SMBus(1) as bus:
+    with SMBus(1) as bus:
     # bus = smbus2.SMBus(1)
         bus.write_byte(_sensor_address, _soft_rest)
 
         sleep(0.05)
 
         while(True):
-            bus.write_byte(_sensor_address, _trig_flow_read)
-            read = smbus2.i2c_msg.read(_sensor_address, 3)
-            flow_data = list(bus.i2c_rdwr(read))
+            # bus.write_byte(_sensor_address, _trig_flow_read)
+            write = i2c_msg.write(_sensor_address, _trig_flow_read)
+            read = i2c_msg.read(_sensor_address, 3)
+            flow_data = bus.i2c_rdwr(write, read)
             # flow_data = bus.read_i2c_block_data(_sensor_address, _trig_flow_read, 3)
             print(flow_data)
             # reading, _ = read_sensor(bus)
