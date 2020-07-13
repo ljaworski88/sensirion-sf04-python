@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import smbus2
+import smbus2, i2c_msg
 from time import sleep
 
 __author__ = 'Lukas Jaworski'
@@ -62,7 +62,10 @@ if __name__ == '__main__':
         sleep(0.05)
 
         while(True):
-            flow_data = bus.read_i2c_block_data(_sensor_address, _trig_flow_read, 3)
+            bus.write_byte(_sensor_address, _trig_flow_read)
+            read = i2c_msg.read(_sensor_address, 3)
+            flow_data = list(bus.i2c_rdwr(read))
+            # flow_data = bus.read_i2c_block_data(_sensor_address, _trig_flow_read, 3)
             print(flow_data)
             # reading, _ = read_sensor(bus)
             # print('flow reading: {}'.format(reading))
