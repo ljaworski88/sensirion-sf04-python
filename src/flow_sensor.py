@@ -57,12 +57,13 @@ def reset_sensor(i2c_bus, soft=True):
 if __name__ == '__main__':
     with smbus2.SMBus(1) as bus:
     # bus = smbus2.SMBus(1)
-
-        reset_sensor(bus)
+        bus.write_byte(_sensor_address, _soft_rest)
 
         sleep(0.05)
 
         while(True):
-            reading, _ = read_sensor(bus)
-            print('flow reading: {}'.format(reading))
-            print('crc byte: {}'.format(_))
+            flow_data = bus.read_i2c_block_data(_sensor_address, _trig_flow_read, 3)
+            print(flow_data)
+            # reading, _ = read_sensor(bus)
+            # print('flow reading: {}'.format(reading))
+            # print('crc byte: {}'.format(_))
