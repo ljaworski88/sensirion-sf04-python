@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 import flow_sensor
-import smbus
+import smbus2
 from time import sleep
 
-bus = smbus.SMBus(1)
+bus = smbus2.SMBus(1)
 
 flow_sensor.reset_sensor(bus)
 
