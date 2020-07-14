@@ -58,8 +58,9 @@ if __name__ == '__main__':
     with SMBus(1) as bus:
     # bus = smbus2.SMBus(1)
         bus.write_byte(_sensor_address, _soft_rest)
+        print("Sensor reset!")
 
-        sleep(0.05)
+        sleep(0.5)
 
         while(True):
             bus.write_byte(_sensor_address, _trig_flow_read)
