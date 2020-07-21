@@ -55,7 +55,7 @@ def reset_sensor(i2c_bus, soft=True):
 
 
 if __name__ == '__main__':
-    with SMBus(1) as bus:
+    with SMBus(3) as bus:
     # bus = smbus2.SMBus(1)
         bus.write_byte(_sensor_address, _soft_rest)
         print("Sensor reset!")
