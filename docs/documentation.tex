@@ -16,7 +16,7 @@
 \section{Installation Instructions}
 
 \begin{inparaenum}
-\item Download the latest Raspberry Pi image from \url{https://www.raspberrypi.org/downloads/raspbian/}
+    \item Download the latest Raspberry Pi image from \url{https://www.raspberrypi.org/downloads/raspbian/}
     \item Mount the image according to the instructions for your system.
     \item On the first boot follow the set-up instructions from the Raspberry Pi installer.
     \begin{inparaenum}
@@ -24,14 +24,18 @@
         \item Set a new password. Suggested:\textbf{ortho-lab-169}
         \item Connect to the Wi-Fi and update the system.
     \end{inparaenum}
-    \item Open the terminal and type \textbf{\underline{sudo raspi-config}}.
-    \begin{inparaenum}
-        \item Go to option \textit{\underline{5 Inerfacing Options}}.
-        \item Go to option \textit{\underline{P5 I2C}} and enable it.
-    \end{inparaenum}
-    \item Restart the Raspberry Pi.
+    \item using a text editor go to the \textbf{/boot/} and open \textit{\textbf{config.txt}}
+    \item add the line: \textbf{dtoverlay=i2c-gpio,bus=3}
     \item Open the terminal.
-    \item Run: \textbf{\textit{git clone https://github.com/ljaworski88/hydraulic-permiability.git}}
+    \item Run: \textbf{\textit{git clone https://github.com/ljaworski88/sensirion-sf04-python.git}}
+    \item go into the newly created folder and goto the \textbf{src} subfolder
+    \item copy \textit{i2c-gpio.dtbo}
+    %\item Open the terminal and type \textbf{\underline{sudo raspi-config}}.
+    %\begin{inparaenum}
+        %\item Go to option \textit{\underline{5 Inerfacing Options}}.
+        %\item Go to option \textit{\underline{P5 I2C}} and enable it.
+    %\end{inparaenum}
+    \item Restart the Raspberry Pi.
 \end{inparaenum}
 
 \end{document}
