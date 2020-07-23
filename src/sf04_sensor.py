@@ -6,7 +6,7 @@ from ctypes import *
 import crc8
 
 __author__ = 'Lukas Jaworski'
-__version__ = '0.9.0'
+__version__ = '0.9.5'
 
 _sensor_address = 0x40
 
@@ -193,6 +193,59 @@ def read_scale_and_unit(i2c_bus, crc_check=False):
         print('CRC check failed on retrieving the user register, error codes have been transmitted')
         return (0, "Error", False, False)
 
+def read_product_info(i2c_bus, crc_check=False):
+    #TODO update function description
+    '''
+    Reads the user register of the SF04 Sensirion sensor and then reads
+    the calibration field of the sensor each setting corresponds to an EEPROM
+    address that must then be read to get the scale factor adjustment and the
+    flow rate units code.
+    ----------------------------------------------------------------------------
+    input: i2c_bus, crc_check - type: SMBus2 bus, bool[=False]
+    output: product_name, product_serial, name_crc_result, serial_crc_result
+           - type: bytestring, bytestring, bool, bool
+    '''
+    part_name_address = c_uint16(0x2E8)
+    serial_number_address = c_uint16(0x2F8)
+    i2c_bus.write_block_data(_sensor_address,
+                             _read_eeprom,
+                             [part_name_address.value >> 4,
+                              c_uint16(part_name_address << 12).value >> 8])
+    # part name is 20 bytes with a crc byte every 2 bytes
+    read = i2c_msg.read(_sensor_address, 30)
+    i2c_bus.i2c_rdwr(read)
+    part_name_bytes = [c_uint8(x) for x in list(read)]
+    i2c_bus.write_block_data(_sensor_address,
+                             _read_eeprom,
+                             [serial_number_address.value >> 4,
+                              c_uint16(serial_number_address << 12).value >> 8])
+    # part serial is 4 bytes with a crc byte every 2 bytes
+    read = i2c_msg.read(_sensor_address, 6)
+    i2c_bus.i2c_rdwr(read)
+    serial_number_bytes = [c_uint8(x) for x in list(read)]
+    name_fragments = []
+    for x in range(0,30,3):
+        name_fragments.append((c_uint16(part_name_bytes[x].value << 8 | part_name_bytes[x+1].value), part_name_bytes[x+2]))
+    serial_fragments = []
+    for x in range(0,6,3):
+        serial_fragments.append((c_uint16(serial_number_bytes[x].value << 8 | serial_number_bytes[x+1].value), serial_number_bytes[x+2]))
+    name_crc_result = None
+    serial_crc_result = None
+    if crc_check:
+        name_crc_result = True
+        serial_crc_result = True
+        for name_fragment in name_fragments:
+            name_crc_result = name_crc_result and check_CRC(name_fragment[0], name_fragment[1])
+        for serial_fragment in serial_fragments:
+            serial_crc_result = serial_crc_result and check_CRC(serial_fragment[0], serial_fragment[1])
+    product_name = b''
+    for name_fragment in name_fragments:
+        product_name = b''.join([product_name, name_fragment[0].to_bytes(2, 'big')])
+    product_serial = b''
+    for serial_fragment in serial_fragments:
+        product_serial = b''.join([product_serial, serial_fragment[0].to_bytes(2, 'big')])
+    return (product_name, product_serial, name_crc_result, serial_crc_result)
+
 def check_CRC(message, crc_byte):
     '''
     Checks the reading runs it through a CRC8 checksum function to ensure data
@@ -205,32 +258,13 @@ def check_CRC(message, crc_byte):
     crc_hash.update(message.value.to_bytes(2,'big'))
     return crc_hash.digest() == crc_byte.value.to_bytes(1, 'big')
 
-def reset_sensor(i2c_bus, soft=True, verbose=False):
+def reset_sensor(i2c_bus):
     '''
     Perform a soft reset of the sensor.
     ---------------------------------------------------------------------------
-    input soft - type: bool
+    input: i2c_bus - type: SMBus2 bus
     output: None
     '''
-    if soft:
-        i2c_bus.write_byte(_sensor_address, _soft_rest)
-        if verbose:
-            print('Sensor Reset!')
+    i2c_bus.write_byte(_sensor_address, _soft_rest)
 
 
-# Some tests to check the function of this library
-if __name__ == '__main__':
-    with SMBus(3) as bus:
-        reset_sensor(bus)
-        print("Sensor reset!")
-        sleep(0.5)
-
-        user_reg_val, user_reg_crc, user_crc_result = read_user_reg(bus, True)
-        print('User Register Value: {0: b}'.format(user_reg_val))
-        print('User Register CRC Value: {0: b}'.format(user_reg_crc))
-        print('User Register CRC Result: {}'.format(user_crc_result))
-
-        adv_reg_val, adv_reg_crc, adv_crc_result = read_adv_reg(bus, True)
-        print('Advance User Register Value: {0: b}'.format(adv_reg_val))
-        print('Advance User Register CRC Value: {0: b}'.format(adv_reg_crc))
-        print('Advance User Register CRC Result: {}'.format(adv_crc_result))
