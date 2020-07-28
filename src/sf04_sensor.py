@@ -87,7 +87,9 @@ def set_resolution(i2c_bus, bits=16, crc_check=False):
         # a setting of 000 on those bits coresponds to 9 bit resolution while
         # a value of 111 corresponds to 16 bits
         new_reg_val = c_uint16((old_reg_val.value & 0xF1FF) | (int(bits) << 9))
-        i2c_bus.write_word_data(_sensor_address, _adv_user_reg_w, new_reg_val.value)
+        # i2c_bus.write_word_data(_sensor_address, _adv_user_reg_w, new_reg_val.value)
+        write = i2c_msg.write(_sensor_address, [_adv_user_reg_w, new_reg_val.value])
+        i2c_bus.i2c_rdwr(write)
     return adv_crc_result
 
 def set_calibration_field(i2c_bus, setting=0, crc_check=False):
@@ -106,7 +108,9 @@ def set_calibration_field(i2c_bus, setting=0, crc_check=False):
         # The calibration field sits on bits [6:4] of the user register
         # valid values sit between 0 and 4, or 000 and 100 in binary
         new_reg_val = c_uint16((old_reg_val.value & 0xFF8F) | (int(setting) << 4))
-        i2c_bus.write_word_data(_sensor_address, _user_reg_w, new_reg_val.value)
+        # i2c_bus.write_word_data(_sensor_address, _user_reg_w, new_reg_val.value)
+        write = i2c_msg.write(_sensor_address, [_user_reg_w, new_reg_val.value])
+        i2c_bus.i2c_rdwr(write)
     return user_crc_result
 
 def set_read_data(i2c_bus, source='flow'):
@@ -172,10 +176,11 @@ def read_scale_and_unit(i2c_bus, crc_check=False):
     user_reg, crc_byte, user_crc_result = read_user_reg(i2c_bus, crc_check)
     if user_crc_result is None or user_crc_result:
         scale_factor_address = c_uint16(scale_factor_addresses[(user_reg.value & 0x70) >> 4])
-        i2c_bus.write_block_data(_sensor_address,
-                                 _read_eeprom,
-                                 [scale_factor_address.value >> 4,
-                                  c_uint16(scale_factor_address.value << 12).value >> 8])
+        write = i2c_msg.write(_sensor_address, [_read_eeprom,
+                                                scale_factor_address.value >> 4,
+                                                c_uint16(scale_factor_address.value << 12).value >> 8])
+        i2c_bus.i2c_rdwr(write)
+
         read = i2c_msg.read(_sensor_address, 6)
         i2c_bus.i2c_rdwr(read)
         scale_and_unit = [c_uint8(x) for x in list(read)]
@@ -207,35 +212,20 @@ def read_product_info(i2c_bus, crc_check=False):
     '''
     part_name_address = c_uint16(0x2E8)
     serial_number_address = c_uint16(0x2F8)
-    write_list = [_read_eeprom,
-                  part_name_address.value >> 4,
-                  c_uint16(part_name_address.value << 12).value >> 8]
-    print(hex(write_list[1]), hex(write_list[1]), hex(write_list[2]))
     write = i2c_msg.write(_sensor_address, [_read_eeprom,
                                             part_name_address.value >> 4,
                                             c_uint16(part_name_address.value << 12).value >> 8])
     i2c_bus.i2c_rdwr(write)
 
-    # i2c_bus.write_block_data(_sensor_address,
-                             # _read_eeprom,
-                             # [part_name_address.value >> 4,
-                              # c_uint16(part_name_address.value << 12).value >> 8])
     # part name is 20 bytes with a crc byte every 2 bytes
     read = i2c_msg.read(_sensor_address, 30)
     i2c_bus.i2c_rdwr(read)
     part_name_bytes = [c_uint8(x) for x in list(read)]
-    write_list = [_read_eeprom,
-                  serial_number_address.value >> 4,
-                  c_uint16(serial_number_address.value << 12).value >> 8]
-    print(hex(write_list[0]), hex(write_list[1]), hex(write_list[2]))
     write = i2c_msg.write(_sensor_address, [_read_eeprom,
                                             serial_number_address.value >> 4,
                                             c_uint16(serial_number_address.value << 12).value >> 8])
     i2c_bus.i2c_rdwr(write)
-    # i2c_bus.write_block_data(_sensor_address,
-                             # _read_eeprom,
-                             # [serial_number_address.value >> 4,
-                              # c_uint16(serial_number_address << 12).value >> 8])
+
     # part serial is 4 bytes with a crc byte every 2 bytes
     read = i2c_msg.read(_sensor_address, 6)
     i2c_bus.i2c_rdwr(read)
@@ -257,10 +247,10 @@ def read_product_info(i2c_bus, crc_check=False):
             serial_crc_result = serial_crc_result and check_CRC(serial_fragment[0], serial_fragment[1])
     product_name = b''
     for name_fragment in name_fragments:
-        product_name = b''.join([product_name, name_fragment[0].to_bytes(2, 'big')])
+        product_name = b''.join([product_name, name_fragment[0].value.to_bytes(2, 'big')])
     product_serial = b''
     for serial_fragment in serial_fragments:
-        product_serial = b''.join([product_serial, serial_fragment[0].to_bytes(2, 'big')])
+        product_serial = b''.join([product_serial, serial_fragment[0].value.to_bytes(2, 'big')])
     return (product_name, product_serial, name_crc_result, serial_crc_result)
 
 def check_CRC(message, crc_byte):
