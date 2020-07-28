@@ -13,7 +13,7 @@ with SMBus(3) as bus:
     sleep(0.5)
 
     try:
-        product_name, product_serial, name_crc_result, serial_crc_result = read_product_info(bus, True)
+        product_name, product_serial, name_crc_result, serial_crc_result = read_product_info(bus)
         print('Product Name: {}'.format(product_name))
         print('Serial Number: {}'.format(product_serial))
         print('Product name CRC passed: {}'.format(name_crc_result))
@@ -25,7 +25,7 @@ with SMBus(3) as bus:
 
 
     try:
-        user_reg_val, user_reg_crc, user_crc_result = read_user_reg(bus, True)
+        user_reg_val, user_reg_crc, user_crc_result = read_user_reg(bus)
         print('User Register Value: {0: b}'.format(user_reg_val.value))
         print('User Register CRC Value: {0: b}'.format(user_reg_crc.value))
         print('User Register CRC Result: {}'.format(user_crc_result))
@@ -35,7 +35,7 @@ with SMBus(3) as bus:
         print(e)
 
     try:
-        adv_reg_val, adv_reg_crc, adv_crc_result = read_adv_reg(bus, True)
+        adv_reg_val, adv_reg_crc, adv_crc_result = read_adv_reg(bus)
         print('Advance User Register Value: {0: b}'.format(adv_reg_val.value))
         print('Advance User Register CRC Value: {0: b}'.format(adv_reg_crc.value))
         print('Advance User Register CRC Result: {}'.format(adv_crc_result))
@@ -46,7 +46,7 @@ with SMBus(3) as bus:
 
     for x in range(9,17):
         try:
-            function_result = set_resolution(bus, x, True)
+            function_result = set_resolution(bus, x)
             print('Set resolution success: {}'.format(function_result))
         except Exception as e:
             print('Failed to set the resoltution')
@@ -54,7 +54,7 @@ with SMBus(3) as bus:
             print(e)
 
         try:
-            adv_reg_val, adv_reg_crc, adv_crc_result = read_adv_reg(bus, True)
+            adv_reg_val, adv_reg_crc, adv_crc_result = read_adv_reg(bus)
             print('Advance User Register Value: {0: b}'.format(adv_reg_val.value))
             print('Advance User Register CRC Value: {0: b}'.format(adv_reg_crc.value))
             print('Advance User Register CRC Result: {}'.format(adv_crc_result))
@@ -65,7 +65,7 @@ with SMBus(3) as bus:
 
     for x in range(0, 5):
         try:
-            function_result = set_calibration_field(bus, x, True)
+            function_result = set_calibration_field(bus, x)
             print('Set calibration field success: {}'.format(function_result))
         except Exception as e:
             print('Failed retrieving product_name')
@@ -73,7 +73,7 @@ with SMBus(3) as bus:
             print(e)
 
         try:
-            user_reg_val, user_reg_crc, user_crc_result = read_user_reg(bus, True)
+            user_reg_val, user_reg_crc, user_crc_result = read_user_reg(bus)
             print('User Register Value: {0: b}'.format(user_reg_val.value))
             print('User Register CRC Value: {0: b}'.format(user_reg_crc.value))
             print('User Register CRC Result: {}'.format(user_crc_result))
@@ -83,7 +83,7 @@ with SMBus(3) as bus:
             print(e)
 
         try:
-            scale_factor, units, scale_crc, unit_crc = read_scale_and_unit(bus, True)
+            scale_factor, units, scale_crc, unit_crc = read_scale_and_unit(bus)
             print('Scale factor is: {}'.format(scale_factor.value))
             print('Units are: {}'.format(units))
             print('Scale factor CRC result: {}'.format(scale_crc))
@@ -101,7 +101,7 @@ with SMBus(3) as bus:
                 print(e)
 
             try:
-                raw_data, data_crc, data_crc_result = read_raw_data(bus, True)
+                raw_data, data_crc, data_crc_result = read_raw_data(bus)
             except Exception as e:
                 print('Failed retrieving the data')
                 print('error encountered is:')
