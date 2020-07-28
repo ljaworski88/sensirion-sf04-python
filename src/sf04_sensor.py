@@ -214,6 +214,7 @@ def read_product_info(i2c_bus, crc_check=False):
     write = i2c_msg.write(_sensor_address, [_read_eeprom,
                                             part_name_address.value >> 4,
                                             c_uint16(part_name_address.value << 12).value >> 8])
+    i2c_bus.i2c_rdwr(write)
 
     # i2c_bus.write_block_data(_sensor_address,
                              # _read_eeprom,
