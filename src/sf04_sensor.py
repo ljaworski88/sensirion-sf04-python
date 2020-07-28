@@ -215,6 +215,10 @@ def read_product_info(i2c_bus, crc_check=False):
     read = i2c_msg.read(_sensor_address, 30)
     i2c_bus.i2c_rdwr(read)
     part_name_bytes = [c_uint8(x) for x in list(read)]
+    write_list = [_read_eeprom,
+                  serial_number_address.value >> 4,
+                  c_uint16(serial_number_address << 12).value >> 8]
+    print(hex(write_list[1]), hex(write_list[1]), hex(write_list[2]))
     write = i2c_msg.write(_sensor_address, [_read_eeprom,
                                             serial_number_address.value >> 4,
                                             c_uint16(serial_number_address << 12).value >> 8])

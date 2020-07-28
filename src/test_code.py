@@ -56,7 +56,7 @@ with SMBus(3) as bus:
         try:
             adv_reg_val, adv_reg_crc, adv_crc_result = read_adv_reg(bus, True)
             print('Advance User Register Value: {0: b}'.format(adv_reg_val.value))
-            print('Advance User Register CRC Value: {0: b}'.format(adv_reg_cr.valuec))
+            print('Advance User Register CRC Value: {0: b}'.format(adv_reg_crc.value))
             print('Advance User Register CRC Result: {}'.format(adv_crc_result))
         except Exception as e:
             print('Failed to read the advanced register')
