@@ -215,10 +215,14 @@ def read_product_info(i2c_bus, crc_check=False):
     read = i2c_msg.read(_sensor_address, 30)
     i2c_bus.i2c_rdwr(read)
     part_name_bytes = [c_uint8(x) for x in list(read)]
-    i2c_bus.write_block_data(_sensor_address,
-                             _read_eeprom,
-                             [serial_number_address.value >> 4,
-                              c_uint16(serial_number_address << 12).value >> 8])
+    write = i2c_msg.write(_sensor_address, [_read_eeprom,
+                                            serial_number_address.value >> 4,
+                                            c_uint16(serial_number_address << 12).value >> 8])
+    i2c_bus.i2c_rdwr(write)
+    # i2c_bus.write_block_data(_sensor_address,
+                             # _read_eeprom,
+                             # [serial_number_address.value >> 4,
+                              # c_uint16(serial_number_address << 12).value >> 8])
     # part serial is 4 bytes with a crc byte every 2 bytes
     read = i2c_msg.read(_sensor_address, 6)
     i2c_bus.i2c_rdwr(read)
