@@ -94,7 +94,7 @@ with SMBus(3) as bus:
 
         for reading_type in ['flow', 'temp', 'vdd']:
             try:
-                set_read_data(bus, reading_data)
+                set_read_data(bus, reading_type)
             except Exception as e:
                 print('Failed to set the sensor to read mode')
                 print('error encountered is:')

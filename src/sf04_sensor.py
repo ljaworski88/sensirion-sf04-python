@@ -175,7 +175,7 @@ def read_scale_and_unit(i2c_bus, crc_check=False):
         i2c_bus.write_block_data(_sensor_address,
                                  _read_eeprom,
                                  [scale_factor_address.value >> 4,
-                                  c_uint16(scale_factor_address << 12).value >> 8])
+                                  c_uint16(scale_factor_address.value << 12).value >> 8])
         read = i2c_msg.read(_sensor_address, 6)
         i2c_bus.i2c_rdwr(read)
         scale_and_unit = [c_uint8(x) for x in list(read)]
