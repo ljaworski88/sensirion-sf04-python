@@ -2,8 +2,7 @@
 
 from smbus2 import SMBus, i2c_msg
 from time import sleep
-from ctypes import *
-from sf04_sensor import *
+from sf04_sensor.sf04 import *
 
 
 # Some tests to check the function of this library

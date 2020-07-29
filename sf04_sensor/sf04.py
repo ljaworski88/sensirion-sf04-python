@@ -3,7 +3,6 @@
 from smbus2 import SMBus, i2c_msg
 from time import sleep
 from ctypes import c_int16, c_uint8, c_uint16
-import crc8
 
 __author__ = 'Lukas Jaworski'
 __version__ = '0.9.5'
@@ -217,8 +216,8 @@ def read_product_info(i2c_bus, crc_check=False):
     output: product_name, product_serial, name_crc_result, serial_crc_result
            - type: bytestring, bytestring, bool, bool
     '''
-    part_name_address = c_uint16(0x2E8)
-    serial_number_address = c_uint16(0x2F8)
+    part_name_address = 0x2E8
+    serial_number_address = 0x2F8
     # write = i2c_msg.write(_sensor_address, [_read_eeprom,
                                             # part_name_address.value >> 4,
                                             # c_uint16(part_name_address.value << 12).value >> 8])
