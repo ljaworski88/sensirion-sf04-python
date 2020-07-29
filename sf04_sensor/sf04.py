@@ -116,7 +116,8 @@ def set_calibration_field(i2c_bus, setting=0, crc_check=False):
         # valid values sit between 0 and 4, or 000 and 100 in binary
         new_reg_val = (old_reg_val & 0xFF8F) | (int(setting) << 4)
         # i2c_bus.write_word_data(_sensor_address, _user_reg_w, new_reg_val.value)
-        write_comms(i2c_bus,_user_reg_w,[new_reg_val])
+        new_reg = [new_reg_val >> 8, new_reg_val & 0xFF]
+        write_comms(i2c_bus, _user_reg_w, new_reg)
         # write = i2c_msg.write(_sensor_address, [_user_reg_w, new_reg_val.value])
         # i2c_bus.i2c_rdwr(write)
     return user_crc_result
@@ -155,7 +156,7 @@ def read_raw_data(i2c_bus, crc_check=False):
         crc_result = check_CRC(c_uint16(raw_data_val.value).value, crc_byte)
     return (raw_data_val.value, crc_byte, crc_result)
 
-def scale_flow_read(raw_flow_reading, scale_factor):
+def scale_reading(raw_flow_reading, scale_factor):
     '''
     A simple function to scale the output value recieved from the SF04 sensor.
     ----------------------------------------------------------------------------
@@ -282,10 +283,15 @@ def check_CRC(message, crc_byte):
     crc_polynomial = 0x131
     crc_hash = c_uint8((message & 0xFF) ^ (message >> 8))
     for x in range(8):
+        print(crc_byte)
+        print(crc_hash.value)
         if (crc_hash.value & 0x80):
             crc_hash = c_uint8((crc_hash.value << 1) ^ crc_polynomial)
         else:
             crc_hash = c_uint8(crc_hash.value << 1)
+    print('Final Hash Check: ')
+    print('Hash: {:b}'.format(crc_hash.value))
+    print('CRC: {:b}'.format(crc_byte))
     return crc_hash.value == crc_byte
 
 def reset_sensor(i2c_bus):
