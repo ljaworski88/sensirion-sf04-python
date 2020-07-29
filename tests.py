@@ -24,7 +24,7 @@ with SMBus(3) as bus:
 
 
     try:
-        user_reg_val, user_reg_crc, user_crc_result = read_user_reg(bus)
+        user_reg_val, user_reg_crc, user_crc_result = read_user_reg(bus, True)
         print('User Register Value: {0: b}'.format(user_reg_val))
         print('User Register CRC Value: {0: b}'.format(user_reg_crc))
         print('User Register CRC Result: {}'.format(user_crc_result))
@@ -34,7 +34,7 @@ with SMBus(3) as bus:
         print(e)
 
     try:
-        adv_reg_val, adv_reg_crc, adv_crc_result = read_adv_reg(bus)
+        adv_reg_val, adv_reg_crc, adv_crc_result = read_adv_reg(bus, True)
         print('Advance User Register Value: {0: b}'.format(adv_reg_val))
         print('Advance User Register CRC Value: {0: b}'.format(adv_reg_crc))
         print('Advance User Register CRC Result: {}'.format(adv_crc_result))

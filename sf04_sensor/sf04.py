@@ -35,9 +35,13 @@ def read_comms(i2c_bus, register, bytes_to_read):
     return list(read)
 
 def write_comms(i2c_bus, register, byte_list):
+    '''
+    Writes to the SF04 Sensirion sensor the bytes given to it
+    ---------------------------------------------------------------------------
+    input: i2c_bus, register, byte_list - type: SMBus2 bus, int, list(int)
+    output: None
+    '''
     byte_list.insert(0, register)
-    print([hex(x) for x in byte_list])
-    sleep(0.01)
     write = i2c_msg.write(_sensor_address, byte_list)
     i2c_bus.i2c_rdwr(write)
 
@@ -181,24 +185,26 @@ def read_scale_and_unit(i2c_bus, crc_check=False):
                   2117: 'ml/min',
                   2100: 'ul/sec',
                   2133: 'ml/hr'}
+
     scale_factor_addresses = (0x2B6, 0x5B6, 0x8B6, 0xBB6, 0xEB6)
+
     user_reg, crc_byte, user_crc_result = read_user_reg(i2c_bus, crc_check)
     if user_crc_result is None or user_crc_result:
         scale_factor_address = scale_factor_addresses[(user_reg & 0x70) >> 4]
         write_comms(i2c_bus, _read_eeprom, [scale_factor_address >> 4,
                                             c_uint16(scale_factor_address << 12).value >> 8])
-        # write = i2c_msg.write(_sensor_address, [_read_eeprom,
-                                                # scale_factor_address.value >> 4,
-                                                # c_uint16(scale_factor_address.value << 12).value >> 8])
-        # i2c_bus.i2c_rdwr(write)
 
         read = i2c_msg.read(_sensor_address, 6)
         i2c_bus.i2c_rdwr(read)
         scale_and_unit = list(read)
+
         scale_factor = scale_and_unit[0] << 8 | scale_and_unit[1]
         scale_crc = scale_and_unit[2]
         unit_code = scale_and_unit[3] << 8 | scale_and_unit[4]
         unit_crc = scale_and_unit[5]
+        print('----------------------Scale Unit Code --------------------')
+        print('scale code: {}'.format(unit_code))
+
         scale_crc_result = None
         unit_crc_result = None
         if crc_check:
@@ -283,13 +289,11 @@ def check_CRC(message, crc_byte):
     crc_polynomial = 0x131
     crc_hash = c_uint8((message & 0xFF) ^ (message >> 8))
     for x in range(8):
-        print(crc_byte)
-        print(crc_hash.value)
         if (crc_hash.value & 0x80):
             crc_hash = c_uint8((crc_hash.value << 1) ^ crc_polynomial)
         else:
             crc_hash = c_uint8(crc_hash.value << 1)
-    print('Final Hash Check: ')
+    print('--------------------Final Hash Check-------------------------------')
     print('Hash: {:b}'.format(crc_hash.value))
     print('CRC: {:b}'.format(crc_byte))
     return crc_hash.value == crc_byte
