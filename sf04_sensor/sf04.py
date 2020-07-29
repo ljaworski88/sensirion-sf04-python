@@ -195,8 +195,6 @@ def read_scale_and_unit(i2c_bus, crc_check=False):
         scale_crc = scale_and_unit[2]
         unit_code = scale_and_unit[3] << 8 | scale_and_unit[4]
         unit_crc = scale_and_unit[5]
-        print('----------------------Scale Unit Code --------------------')
-        print('scale code: {}'.format(unit_code))
 
         scale_crc_result = None
         unit_crc_result = None
@@ -278,9 +276,6 @@ def check_CRC(message, crc_byte):
             crc_hash = c_uint8((crc_hash.value << 1) ^ crc_polynomial)
         else:
             crc_hash = c_uint8(crc_hash.value << 1)
-    print('--------------------Final Hash Check-------------------------------')
-    print('Hash: {:b}'.format(crc_hash.value))
-    print('CRC: {:b}'.format(crc_byte))
     return crc_hash.value == crc_byte
 
 def reset_sensor(i2c_bus):
