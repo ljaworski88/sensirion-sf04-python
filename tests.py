@@ -12,7 +12,7 @@ with SMBus(3) as bus:
     sleep(0.5)
 
     try:
-        product_name, product_serial, name_crc_result, serial_crc_result = read_product_info(bus)
+        product_name, product_serial, name_crc_result, serial_crc_result = read_product_info(bus, True)
         print('Product Name: {}'.format(product_name))
         print('Serial Number: {}'.format(product_serial))
         print('Product name CRC passed: {}'.format(name_crc_result))
