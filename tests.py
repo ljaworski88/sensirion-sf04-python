@@ -19,7 +19,7 @@ with SMBus(3) as bus:
         print('Product name CRC passed: {}'.format(name_crc_result))
         print('Product serial CRC passed: {}'.format(serial_crc_result))
     except Exception as e:
-        print('Failed retrieving product_name')
+        print('Failed retrieving product name and serial. Function[read_product_info]')
         print('error encountered is:')
         print(e)
 
@@ -30,7 +30,7 @@ with SMBus(3) as bus:
         print('User Register CRC Value: {0: b}'.format(user_reg_crc.value))
         print('User Register CRC Result: {}'.format(user_crc_result))
     except Exception as e:
-        print('Failed to read the user register')
+        print('Failed to read the user register. Function[read_user_reg]')
         print('error encountered is:')
         print(e)
 
@@ -40,7 +40,7 @@ with SMBus(3) as bus:
         print('Advance User Register CRC Value: {0: b}'.format(adv_reg_crc.value))
         print('Advance User Register CRC Result: {}'.format(adv_crc_result))
     except Exception as e:
-        print('Failed to read the advanced register')
+        print('Failed to read the advanced register. Function[read_adv_reg]')
         print('error encountered is:')
         print(e)
 
@@ -49,7 +49,7 @@ with SMBus(3) as bus:
             function_result = set_resolution(bus, x)
             print('Set resolution success: {}'.format(function_result))
         except Exception as e:
-            print('Failed to set the resoltution')
+            print('Failed to set the resoltution. Function[set_resolution]')
             print('error encountered is:')
             print(e)
 
@@ -59,7 +59,7 @@ with SMBus(3) as bus:
             print('Advance User Register CRC Value: {0: b}'.format(adv_reg_crc.value))
             print('Advance User Register CRC Result: {}'.format(adv_crc_result))
         except Exception as e:
-            print('Failed to read the advanced register')
+            print('Failed to read the advanced register. Function[read_adv_reg]')
             print('error encountered is:')
             print(e)
 
@@ -68,7 +68,7 @@ with SMBus(3) as bus:
             function_result = set_calibration_field(bus, x)
             print('Set calibration field success: {}'.format(function_result))
         except Exception as e:
-            print('Failed retrieving product_name')
+            print('Failed retrieving product_name. Function[set_calibration_field]')
             print('error encountered is:')
             print(e)
 
@@ -78,7 +78,7 @@ with SMBus(3) as bus:
             print('User Register CRC Value: {0: b}'.format(user_reg_crc.value))
             print('User Register CRC Result: {}'.format(user_crc_result))
         except Exception as e:
-            print('Failed to read the user register')
+            print('Failed to read the user register. Function[read_user_reg]')
             print('error encountered is:')
             print(e)
 
@@ -88,7 +88,7 @@ with SMBus(3) as bus:
             print('Units are: {}'.format(units))
             print('Scale factor CRC result: {}'.format(scale_crc))
         except Exception as e:
-            print('Failed to read the scale factor and unit')
+            print('Failed to read the scale factor and unit. Function[read_scale_and_unit]')
             print('error encountered is:')
             print(e)
 
@@ -96,14 +96,14 @@ with SMBus(3) as bus:
             try:
                 set_read_data(bus, reading_type)
             except Exception as e:
-                print('Failed to set the sensor to read mode')
+                print('Failed to set the sensor to read mode. Function[set_read_data]')
                 print('error encountered is:')
                 print(e)
 
             try:
                 raw_data, data_crc, data_crc_result = read_raw_data(bus)
             except Exception as e:
-                print('Failed retrieving the data')
+                print('Failed retrieving the data. Function[read_raw_data]')
                 print('error encountered is:')
                 print(e)
 
@@ -114,6 +114,6 @@ with SMBus(3) as bus:
                 print('CRC result: {}'.format(data_crc_result))
                 print('Scaled {0} reading: {1} {2}'.format(reading_type, scaled_data, units))
             except Exception as e:
-                print('Failed scaling the result')
+                print('Failed scaling the result. Function[scale_reading]')
                 print('error encountered is:')
                 print(e)
