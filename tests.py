@@ -26,8 +26,8 @@ with SMBus(3) as bus:
 
     try:
         user_reg_val, user_reg_crc, user_crc_result = read_user_reg(bus)
-        print('User Register Value: {0: b}'.format(user_reg_val.value))
-        print('User Register CRC Value: {0: b}'.format(user_reg_crc.value))
+        print('User Register Value: {0: b}'.format(user_reg_val))
+        print('User Register CRC Value: {0: b}'.format(user_reg_crc))
         print('User Register CRC Result: {}'.format(user_crc_result))
     except Exception as e:
         print('Failed to read the user register. Function[read_user_reg]')
@@ -36,8 +36,8 @@ with SMBus(3) as bus:
 
     try:
         adv_reg_val, adv_reg_crc, adv_crc_result = read_adv_reg(bus)
-        print('Advance User Register Value: {0: b}'.format(adv_reg_val.value))
-        print('Advance User Register CRC Value: {0: b}'.format(adv_reg_crc.value))
+        print('Advance User Register Value: {0: b}'.format(adv_reg_val))
+        print('Advance User Register CRC Value: {0: b}'.format(adv_reg_crc))
         print('Advance User Register CRC Result: {}'.format(adv_crc_result))
     except Exception as e:
         print('Failed to read the advanced register. Function[read_adv_reg]')
@@ -55,8 +55,8 @@ with SMBus(3) as bus:
 
         try:
             adv_reg_val, adv_reg_crc, adv_crc_result = read_adv_reg(bus)
-            print('Advance User Register Value: {0: b}'.format(adv_reg_val.value))
-            print('Advance User Register CRC Value: {0: b}'.format(adv_reg_crc.value))
+            print('Advance User Register Value: {0: b}'.format(adv_reg_val))
+            print('Advance User Register CRC Value: {0: b}'.format(adv_reg_crc))
             print('Advance User Register CRC Result: {}'.format(adv_crc_result))
         except Exception as e:
             print('Failed to read the advanced register. Function[read_adv_reg]')
@@ -74,8 +74,8 @@ with SMBus(3) as bus:
 
         try:
             user_reg_val, user_reg_crc, user_crc_result = read_user_reg(bus)
-            print('User Register Value: {0: b}'.format(user_reg_val.value))
-            print('User Register CRC Value: {0: b}'.format(user_reg_crc.value))
+            print('User Register Value: {0: b}'.format(user_reg_val))
+            print('User Register CRC Value: {0: b}'.format(user_reg_crc))
             print('User Register CRC Result: {}'.format(user_crc_result))
         except Exception as e:
             print('Failed to read the user register. Function[read_user_reg]')
@@ -84,7 +84,7 @@ with SMBus(3) as bus:
 
         try:
             scale_factor, units, scale_crc, unit_crc = read_scale_and_unit(bus)
-            print('Scale factor is: {}'.format(scale_factor.value))
+            print('Scale factor is: {}'.format(scale_factor))
             print('Units are: {}'.format(units))
             print('Scale factor CRC result: {}'.format(scale_crc))
         except Exception as e:
@@ -108,9 +108,9 @@ with SMBus(3) as bus:
                 print(e)
 
             try:
-                scaled_data = scale_reading(raw_data.value, scale_factor.value)
-                print('Raw {0} reading: {1}'.format(reading_type, raw_data.value))
-                print('Raw data CRC: {}'.format(data_crc.value))
+                scaled_data = scale_reading(raw_data, scale_factor)
+                print('Raw {0} reading: {1}'.format(reading_type, raw_data))
+                print('Raw data CRC: {}'.format(data_crc))
                 print('CRC result: {}'.format(data_crc_result))
                 print('Scaled {0} reading: {1} {2}'.format(reading_type, scaled_data, units))
             except Exception as e:

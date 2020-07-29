@@ -2,7 +2,7 @@
 
 from smbus2 import SMBus, i2c_msg
 from time import sleep
-from ctypes import *
+from ctypes import c_int16, c_uint8, c_uint16
 import crc8
 
 __author__ = 'Lukas Jaworski'
@@ -80,7 +80,7 @@ def set_resolution(i2c_bus, bits=16, crc_check=False):
     Resolution must be between 9 and 16 bits.
     ----------------------------------------------------------------------------
     input: i2c_bus, bits, crc_check - type: SMBus2 bus, int[=16], bool[=False]
-    output: reg_val, crc_byte, crc_result - type: c_uint16, c_uint8, bool
+    output: reg_val, crc_byte, crc_result - type: int, int, bool
     '''
     if int(bits) > 16 or int(bits) < 9:
         raise ValueError('bits must be an integer between 9 and 16 inclusive.')
@@ -273,7 +273,7 @@ def check_CRC(message, crc_byte):
     Checks the reading runs it through a CRC8 checksum function to ensure data
     integrity.
     ---------------------------------------------------------------------------
-    input: message, crc_byte - type: c_uint16, c_uint8
+    input: message, crc_byte - type: int, int
     output: checksum_result - type: bool
     '''
     crc_polynomial = 0x131
