@@ -84,12 +84,15 @@ def set_resolution(i2c_bus, bits=16, crc_check=False):
     if int(bits) > 16 or int(bits) < 9:
         raise ValueError('bits must be an integer between 9 and 16 inclusive.')
     old_reg_val, crc_byte, adv_crc_result = read_adv_reg(i2c_bus, crc_check)
+    print('old Reg Val: {}'.format(old_reg_val))
     if adv_crc_result or adv_crc_result is None:
         bits = bits - 9
         # The resolution field sits on bits [11:9] of the advanced user register
         # a setting of 000 on those bits coresponds to 9 bit resolution while
         # a value of 111 corresponds to 16 bits
         new_reg_val = (old_reg_val & 0xF1FF) | (int(bits) << 9)
+        print('new Reg Val: {}'.format(new_reg_val))
+        sleep(0.01)
         write_comms(i2c_bus, _adv_user_reg_w, [new_reg_val])
         # write = i2c_msg.write(_sensor_address, [_adv_user_reg_w, new_reg_val.value])
         # i2c_bus.i2c_rdwr(write)
