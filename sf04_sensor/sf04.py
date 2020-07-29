@@ -36,6 +36,8 @@ def read_comms(i2c_bus, register, bytes_to_read):
 
 def write_comms(i2c_bus, register, byte_list):
     byte_list.insert(0, register)
+    print([hex(x) for x in byte_list])
+    sleep(0.01)
     write = i2c_msg.write(_sensor_address, byte_list)
     i2c_bus.i2c_rdwr(write)
 
