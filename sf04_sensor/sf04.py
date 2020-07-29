@@ -30,8 +30,6 @@ def read_comms(i2c_bus, register, bytes_to_read):
     i2c_bus.write_byte(_sensor_address, register)
     read = i2c_msg.read(_sensor_address, bytes_to_read)
     i2c_bus.i2c_rdwr(read)
-    # Change the results to c types for more precise bit manipulations
-    # byte_list = [c_uint8(x) for x in list(read)]
     return list(read)
 
 def write_comms(i2c_bus, register, byte_list):
@@ -59,7 +57,7 @@ def read_user_reg(i2c_bus, crc_check=False):
     crc_byte = reg_value_list[2]
     crc_result = None
     if crc_check:
-        crc_result = check_CRC(reg_val.value, crc_byte)
+        crc_result = check_CRC(reg_val, crc_byte)
     return (reg_val, crc_byte, crc_result)
 
 def read_adv_reg(i2c_bus, crc_check=False):
@@ -76,7 +74,7 @@ def read_adv_reg(i2c_bus, crc_check=False):
     crc_byte = reg_value_list[2]
     crc_result = None
     if crc_check:
-        crc_result = check_CRC(reg_val.value, crc_byte.value)
+        crc_result = check_CRC(reg_val, crc_byte)
     return (reg_val, crc_byte, crc_result)
 
 def set_resolution(i2c_bus, bits=16, crc_check=False):
@@ -99,8 +97,6 @@ def set_resolution(i2c_bus, bits=16, crc_check=False):
         new_reg_val = (old_reg_val & 0xF1FF) | (int(bits) << 9)
         new_reg = [new_reg_val >> 8, new_reg_val & 0xFF]
         write_comms(i2c_bus, _adv_user_reg_w, new_reg)
-        # write = i2c_msg.write(_sensor_address, [_adv_user_reg_w, new_reg_val.value])
-        # i2c_bus.i2c_rdwr(write)
     return adv_crc_result
 
 def set_calibration_field(i2c_bus, setting=0, crc_check=False):
@@ -119,11 +115,8 @@ def set_calibration_field(i2c_bus, setting=0, crc_check=False):
         # The calibration field sits on bits [6:4] of the user register
         # valid values sit between 0 and 4, or 000 and 100 in binary
         new_reg_val = (old_reg_val & 0xFF8F) | (int(setting) << 4)
-        # i2c_bus.write_word_data(_sensor_address, _user_reg_w, new_reg_val.value)
         new_reg = [new_reg_val >> 8, new_reg_val & 0xFF]
         write_comms(i2c_bus, _user_reg_w, new_reg)
-        # write = i2c_msg.write(_sensor_address, [_user_reg_w, new_reg_val.value])
-        # i2c_bus.i2c_rdwr(write)
     return user_crc_result
 
 def set_read_data(i2c_bus, source='flow'):
@@ -229,10 +222,6 @@ def read_product_info(i2c_bus, crc_check=False):
     '''
     part_name_address = 0x2E8
     serial_number_address = 0x2F8
-    # write = i2c_msg.write(_sensor_address, [_read_eeprom,
-                                            # part_name_address.value >> 4,
-                                            # c_uint16(part_name_address.value << 12).value >> 8])
-    # i2c_bus.i2c_rdwr(write)
     write_comms(i2c_bus, _read_eeprom, [part_name_address >> 4,
                                         c_uint16(part_name_address << 12).value >> 8])
 
@@ -240,10 +229,6 @@ def read_product_info(i2c_bus, crc_check=False):
     read = i2c_msg.read(_sensor_address, 30)
     i2c_bus.i2c_rdwr(read)
     part_name_bytes = list(read)
-    # write = i2c_msg.write(_sensor_address, [_read_eeprom,
-                                            # serial_number_address.value >> 4,
-                                            # c_uint16(serial_number_address.value << 12).value >> 8])
-    # i2c_bus.i2c_rdwr(write)
 
     write_comms(i2c_bus, _read_eeprom, [serial_number_address >> 4,
                                         c_uint16(serial_number_address << 12).value >> 8])
