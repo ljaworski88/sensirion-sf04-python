@@ -209,14 +209,12 @@ def read_scale_and_unit(i2c_bus, crc_check=False):
 def read_product_info(i2c_bus, crc_check=False):
     #TODO update function description
     '''
-    Reads the user register of the SF04 Sensirion sensor and then reads
-    the calibration field of the sensor each setting corresponds to an EEPROM
-    address that must then be read to get the scale factor adjustment and the
-    flow rate units code.
+    Reads the Product ID and Serial Number registers of the SF04 chip and returns
+    those values.
     ----------------------------------------------------------------------------
     input: i2c_bus, crc_check - type: SMBus2 bus, bool[=False]
     output: product_name, product_serial, name_crc_result, serial_crc_result
-           - type: bytestring, bytestring, bool, bool
+           - type: bytestring, int, bool, bool
     '''
     part_name_address = 0x2E8
     serial_number_address = 0x2F8
@@ -256,9 +254,9 @@ def read_product_info(i2c_bus, crc_check=False):
     product_name = b''
     for name_fragment in name_fragments:
         product_name = b''.join([product_name, name_fragment[0].to_bytes(2, 'big')])
-    product_serial = b''
+    product_serial = 0
     for serial_fragment in serial_fragments:
-        product_serial = b''.join([product_serial, serial_fragment[0].to_bytes(2, 'big')])
+        product_serial = product_serial << 8 | serial_fragment[0]
     return (product_name, product_serial, name_crc_result, serial_crc_result)
 
 def check_CRC(message, crc_byte):
