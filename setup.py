@@ -4,7 +4,7 @@ with open('README.md', 'r') as fh:
     long_description = fh.read()
 
 setuptools.setup(
-        name='sf04_sensor-ljaworski88',
+        name='sf04_sensor',
         version='0.9.5',
         author='Lukas Jaworski',
         author_email='ljaworski88@gmail.com',
@@ -18,5 +18,5 @@ setuptools.setup(
             'License :: OSI Approved :: GPLv3 License',
             'Operating System :: OS Independant',
             ],
-        python_requires='>=3.8',
+        python_requires='>=3.6',
         )
