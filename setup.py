@@ -4,7 +4,7 @@ with open('README.md', 'r') as fh:
     long_description = fh.read()
 
 setuptools.setup(
-        name='sf04_sensor',
+        name='sf04',
         version='0.9.5',
         author='Lukas Jaworski',
         author_email='ljaworski88@gmail.com',

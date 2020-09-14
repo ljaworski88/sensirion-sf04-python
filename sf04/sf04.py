@@ -1,7 +1,4 @@
-#!/usr/bin/env python3
-
 from smbus2 import SMBus, i2c_msg
-from time import sleep
 from ctypes import c_int16, c_uint8, c_uint16
 
 __author__ = 'Lukas Jaworski'
